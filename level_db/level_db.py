@@ -46,3 +46,5 @@ class level_db:
         elif sys.platform == "linux":
             if platform.machine() == "x86_64":
                 self.lib: object = ctypes.cdll.LoadLibrary(get_data_folder() + "/level_db_linux_x86_64.so")
+        else:
+            raise Exception("Unknown OS or architecture")
