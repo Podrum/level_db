@@ -34,6 +34,3 @@ from level_db.utils import utils
 class level_db:
     def __init__(self, db_path: str) -> None:
         self.lib = utils.get_lib()
-        if not self.lib
-            raise Exception("Unknown OS or architecture")
-        utils.set_default_args(self.lib)
