@@ -147,3 +147,16 @@ class utils:
     @staticmethod
     def get_data_folder() -> str:
         return os.path.abspath(os.path.dirname(__file__)) + "/data"
+    
+    @staticmethod
+    def get_lib():
+        if sys.platform == "win32":
+            if platform.machine() == "x86":
+                return ctypes.cdll.LoadLibrary(utils.get_data_folder() + "/level_db_win_x86_32.dll")
+            elif platform.machine() == "x86_64":
+                return ctypes.cdll.LoadLibrary(utils.get_data_folder() + "/level_db_win_x86_64.dll")
+        elif sys.platform == "linux":
+            if platform.machine() == "x86_64":
+                return ctypes.cdll.LoadLibrary(utils.get_data_folder() + "/level_db_linux_x86_64.so")
+        else:
+            return False
