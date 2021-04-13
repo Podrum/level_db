@@ -29,7 +29,6 @@
 #                                                                              #
 ################################################################################
 
-import ctypes
 from level_db.utils import utils
 
 class level_db:
