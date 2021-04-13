@@ -159,7 +159,7 @@ class utils:
             if platform.machine() == "x86_64":
                 lib_file_name: str = "/level_db_linux_x86_64.so"
         else:
-            return False
+            raise Exception("Unknown OS or architecture")
         lib: object = ctypes.cdll.LoadLibrary(utils.get_data_folder() + lib_file_name)
         utils.set_default_args(lib)
         return lib
