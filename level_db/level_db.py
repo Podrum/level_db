@@ -33,19 +33,19 @@ from level_db.utils import utils
 
 class level_db:
     def __init__(self) -> None:
-        self.lib = utils.get_lib()
-        
-    def open(self, db_path: str) -> None:
+        self.lib: object = utils.get_lib()
         self.db: object = utils.open_db(self.lib, db_path)
+        self.closed: bool = False
             
     def close(self) -> None:
-        if hasattr(self, "db"):
-            utils.open_db(self.lib, self.db)
+        if not self.closed:
+            utils.close_db(self.lib, self.db)
+            self.closed = True
             
     def get_key(self, key: str) -> str:
-        if hasattr(self, "db"):
+        if not self.closed:
             return utils.get_db_key(self.lib, self.db, key)
         
     def set_key(self, key: str, value: str) -> None:
-        if hasattr(self, "db"):
+        if not self.closed:
             utils.set_db_key(self.lib, self.db, key, value)
