@@ -211,3 +211,6 @@ class utils:
         lib.leveldb_delete(db, options, key, len(key), ctypes.byref(error))
         lib.leveldb_writeoptions_destroy(options)
         utils.check_for_error(lib, error)
+        
+    def close(lib: object, db: object) -> None:
+        lib.leveldb_close(db)
