@@ -30,17 +30,19 @@
 ################################################################################
 
 import ctypes
+import platform
+import sys
 
 class utils:
     @staticmethod
-    def check_for_error(lib: object, error: str):
+    def check_for_error(lib: object, error: str) -> None:
         if bool(error):
             message: str = ctypes.string_at(error)
             lib.leveldb_free(ctypes.cast(error, ctypes.c_void_p))
             raise Exception(message)
         
     @staticmethod
-    def set_default_args(lib: object):
+    def set_default_args(lib: object) -> None:
         lib.leveldb_filterpolicy_create_bloom.argtypes = [ctypes.c_int]
         lib.leveldb_filterpolicy_create_bloom.restype = ctypes.c_void_p
         lib.leveldb_filterpolicy_destroy.argtypes = [ctypes.c_void_p]
@@ -141,3 +143,7 @@ class utils:
         lib.leveldb_release_snapshot.restype = None
         lib.leveldb_free.argtypes = [ctypes.c_void_p]
         lib.leveldb_free.restype = None
+        
+    @staticmethod
+    def get_data_folder() -> str:
+        return os.path.abspath(os.path.dirname(__file__)) + "/data"
