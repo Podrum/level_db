@@ -35,9 +35,17 @@ class level_db:
     def __init__(self) -> None:
         self.lib = utils.get_lib()
         
-    def open(self, db_path) -> None:
+    def open(self, db_path: str) -> None:
         self.db: object = utils.open_db(self.lib, db_path)
             
     def close(self) -> None:
         if hasattr(self, "db"):
             utils.open_db(self.lib, self.db)
+            
+    def get_key(self, key: str) -> str:
+        if hasattr(self, "db"):
+            return utils.get_db_key(self.lib, self.db, key)
+        
+    def set_key(self, key: str, value: str) -> None:
+        if hasattr(self, "db"):
+            utils.set_db_key(self.lib, self.db, key, value)
