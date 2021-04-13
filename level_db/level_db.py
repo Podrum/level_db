@@ -30,11 +30,6 @@
 ################################################################################
 
 import ctypes
-import platform
-import sys
-
-def get_data_folder() -> str:
-    return os.path.abspath(os.path.dirname(__file__)) + "/data"
 
 class level_db:
     def __init__(self, db_path: str) -> None:
