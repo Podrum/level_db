@@ -32,5 +32,12 @@
 from level_db.utils import utils
 
 class level_db:
-    def __init__(self, db_path: str) -> None:
+    def __init__(self) -> None:
         self.lib = utils.get_lib()
+        
+    def open(self, db_path) -> None:
+        self.db: object = utils.open_db(self.lib, db_path)
+            
+    def close(self) -> None:
+        if hasattr(self, "db"):
+            utils.open_db(self.lib, self.db)
