@@ -40,7 +40,7 @@ class level_db:
     def close(self) -> None:
         if not self.closed:
             utils.close_db(self.lib, self.db)
-            self.closed = True
+            self.closed: bool = True
             
     def get_key(self, key: str) -> str:
         if not self.closed:
