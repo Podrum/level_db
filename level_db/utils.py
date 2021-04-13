@@ -149,14 +149,49 @@ class utils:
         return os.path.abspath(os.path.dirname(__file__)) + "/data"
     
     @staticmethod
-    def get_lib():
+    def get_lib() -> object:
         if sys.platform == "win32":
             if platform.machine() == "x86":
-                return ctypes.cdll.LoadLibrary(utils.get_data_folder() + "/level_db_win_x86_32.dll")
+                lib_file_name: str = "/level_db_win_x86_32.dll"
             elif platform.machine() == "x86_64":
-                return ctypes.cdll.LoadLibrary(utils.get_data_folder() + "/level_db_win_x86_64.dll")
+                lib_file_name: str = "/level_db_win_x86_64.dll"
         elif sys.platform == "linux":
             if platform.machine() == "x86_64":
-                return ctypes.cdll.LoadLibrary(utils.get_data_folder() + "/level_db_linux_x86_64.so")
+                lib_file_name: str = "/level_db_linux_x86_64.so"
         else:
             return False
+        lib: object = ctypes.cdll.LoadLibrary(utils.get_data_folder() + lib_file_name)
+        utils.set_default_args(lib)
+        return lib
+        
+    @staticmethod
+    def open_db(lib: object, db_path: str) -> object:
+        filter_policy = lib.leveldb_filterpolicy_create_bloom(10)
+        cache = lib.leveldb_cache_create_lru(40 * 1024 * 1024)
+        options = lib.leveldb_options_create()
+        lib.leveldb_options_set_compression(options, 4)
+        lib.leveldb_options_set_filter_policy(options, filter_policy)
+        lib.leveldb_options_set_create_if_missing(options, False)
+        lib.leveldb_options_set_write_buffer_size(options, 4 * 1024 * 1024)
+        lib.leveldb_options_set_cache(options, cache)
+        lib.leveldb_options_set_block_size(options, 163840)
+        error = ctypes.POINTER(ctypes.c_char)()
+        db = lib.leveldb_open(options, db_path.encode(), ctypes.byref(error))
+        lib.leveldb_options_destroy(options)
+        utils.check_for_error(lib, error)
+        return db
+    
+    @staticmethod
+    def get_db_key(lib: object, db: object, key: str):
+        options = lib.leveldb_readoptions_create()
+        size = ctypes.c_size_t(0)
+        error = ctypes.POINTER(ctypes.c_char)()
+        value_part = lib.leveldb_get(db, options, key, len(key), ctypes.byref(size), ctypes.byref(error))
+        lib.leveldb_readoptions_destroy(options)
+        utils.check_for_error(lib, error)
+        if bool(value_part):
+            value = ctypes.string_at(value_part, size.value)
+            lib.leveldb_free(ctypes.cast(value_part, ctypes.c_void_p))
+        else:
+            raise KeyError(f"Key {key} not found in database.")
+        return value
