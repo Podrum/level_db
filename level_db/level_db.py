@@ -48,3 +48,13 @@ class level_db:
                 self.lib: object = ctypes.cdll.LoadLibrary(get_data_folder() + "/level_db_linux_x86_64.so")
         else:
             raise Exception("Unknown OS or architecture")
+        level_db.set_default_args(self.lib)
+        filter_policy = self.lib.leveldb_filterpolicy_create_bloom(10)
+        cache = self.lib.leveldb_cache_create_lru(40 * 1024 * 1024)
+        options = self.lib.leveldb_options_create()
+        self.lib.leveldb_options_set_compression(options, 4)
+        self.lib.leveldb_options_set_filter_policy(options, filter_policy)
+        self.lib.leveldb_options_set_create_if_missing(options, False)
+        self.lib.leveldb_options_set_write_buffer_size(options, 4 * 1024 * 1024)
+        self.lib.leveldb_options_set_cache(options, cache)
+        self.lib.leveldb_options_set_block_size(options, 163840)
