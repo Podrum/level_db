@@ -182,7 +182,7 @@ class utils:
         return db
     
     @staticmethod
-    def get_db_key(lib: object, db: object, key: str):
+    def get_db_key(lib: object, db: object, key: str) -> str:
         options = lib.leveldb_readoptions_create()
         size = ctypes.c_size_t(0)
         error = ctypes.POINTER(ctypes.c_char)()
@@ -190,8 +190,17 @@ class utils:
         lib.leveldb_readoptions_destroy(options)
         utils.check_for_error(lib, error)
         if bool(value_part):
-            value = ctypes.string_at(value_part, size.value)
+            value: str = ctypes.string_at(value_part, size.value)
             lib.leveldb_free(ctypes.cast(value_part, ctypes.c_void_p))
         else:
             raise KeyError(f"Key {key} not found in database.")
         return value
+    
+    @staticmethod
+    def set_db_key(lib: object, db: object, key: str, value: str) -> None:
+        options = lib.leveldb_writeoptions_create()
+        error = ctypes.POINTER(ctypes.c_char)()
+        lib.leveldb_put(db, options, key, len(key), value, len(value), ctypes.byref(error))
+        lib.leveldb_writeoptions_destroy(options)
+        utils.check_for_error(lib, error)
+        
