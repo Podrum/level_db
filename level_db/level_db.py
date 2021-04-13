@@ -30,18 +30,12 @@
 ################################################################################
 
 import ctypes
+from level_db.utils import utils
 
 class level_db:
     def __init__(self, db_path: str) -> None:
-        if sys.platform == "win32":
-            if platform.machine() == "x86":
-                self.lib: object = ctypes.cdll.LoadLibrary(get_data_folder() + "/level_db_win_x86_32.dll")
-            elif platform.machine() == "x86_64":
-                self.lib: object = ctypes.cdll.LoadLibrary(get_data_folder() + "/level_db_win_x86_64.dll")
-        elif sys.platform == "linux":
-            if platform.machine() == "x86_64":
-                self.lib: object = ctypes.cdll.LoadLibrary(get_data_folder() + "/level_db_linux_x86_64.so")
-        else:
+        self.lib = utils.get_lib()
+        if not self.lib
             raise Exception("Unknown OS or architecture")
         level_db.set_default_args(self.lib)
         filter_policy = self.lib.leveldb_filterpolicy_create_bloom(10)
