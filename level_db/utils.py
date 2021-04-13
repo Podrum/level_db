@@ -204,3 +204,10 @@ class utils:
         lib.leveldb_writeoptions_destroy(options)
         utils.check_for_error(lib, error)
         
+    @staticmethod
+    def delete_db_key(lib: object, db: object, key: str) -> str:
+        options = lib.leveldb_writeoptions_create()
+        error = ctypes.POINTER(ctypes.c_char)()
+        lib.leveldb_delete(db, options, key, len(key), ctypes.byref(error))
+        lib.leveldb_writeoptions_destroy(options)
+        utils.check_for_error(lib, error)
