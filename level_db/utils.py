@@ -152,12 +152,12 @@ class utils:
     def get_lib() -> object:
         if sys.platform == "win32":
             if platform.machine() == "x86":
-                lib_file_name: str = "/level_db_win_x86_32.dll"
+                lib_file_name: str = "level_db_win_x86_32.dll"
             elif platform.machine() == "x86_64":
-                lib_file_name: str = "/level_db_win_x86_64.dll"
+                lib_file_name: str = "level_db_win_x86_64.dll"
         elif sys.platform == "linux":
             if platform.machine() == "x86_64":
-                lib_file_name: str = "/level_db_linux_x86_64.so"
+                lib_file_name: str = "level_db_linux_x86_64.so"
         else:
             raise Exception("Unknown OS or architecture")
         lib: object = ctypes.cdll.LoadLibrary(utils.get_data_folder() + lib_file_name)
@@ -171,7 +171,7 @@ class utils:
         options = lib.leveldb_options_create()
         lib.leveldb_options_set_compression(options, 4)
         lib.leveldb_options_set_filter_policy(options, filter_policy)
-        lib.leveldb_options_set_create_if_missing(options, False)
+        lib.leveldb_options_set_create_if_missing(options, True)
         lib.leveldb_options_set_write_buffer_size(options, 4 * 1024 * 1024)
         lib.leveldb_options_set_cache(options, cache)
         lib.leveldb_options_set_block_size(options, 163840)
