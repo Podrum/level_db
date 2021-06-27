@@ -198,7 +198,7 @@ class utils:
         return value
     
     @staticmethod
-    def set_db_key(lib: object, db: object, key: str, value: str) -> None:
+    def set_db_key(lib: object, db: object, key: str, value: bytes) -> None:
         options = lib.leveldb_writeoptions_create()
         error = ctypes.POINTER(ctypes.c_char)()
         lib.leveldb_put(db, options, key, len(key), value, len(value), ctypes.byref(error))
@@ -206,7 +206,7 @@ class utils:
         utils.check_for_error(lib, error)
         
     @staticmethod
-    def delete_db_key(lib: object, db: object, key: str) -> str:
+    def delete_db_key(lib: object, db: object, key: str) -> bytes:
         options = lib.leveldb_writeoptions_create()
         error = ctypes.POINTER(ctypes.c_char)()
         lib.leveldb_delete(db, options, key, len(key), ctypes.byref(error))
@@ -216,3 +216,14 @@ class utils:
     @staticmethod
     def close_db(lib: object, db: object) -> None:
         lib.leveldb_close(db)
+        
+    @staticmethod
+    def putBatch(lib: object, db, data):
+        batch = ldb.leveldb_writebatch_create()
+        for k, v in data.items():
+            lib.leveldb_writebatch_put(batch, k, len(k), v, len(v))
+        options = lib.leveldb_writeoptions_create()
+        error = ctypes.POINTER(ctypes.c_char)()
+        lib.leveldb_write(db, options, batch, ctypes.byref(error))
+        lib.leveldb_writeoptions_destroy(options)
+        utils.check_for_error(lib, error)
