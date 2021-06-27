@@ -227,3 +227,26 @@ class utils:
         lib.leveldb_write(db, options, batch, ctypes.byref(error))
         lib.leveldb_writeoptions_destroy(options)
         utils.check_for_error(lib, error)
+        
+    @staticmethod
+    def iterate(lib: object, db: object, start = None, end = None):
+        options = lib.leveldb_readoptions_create()
+        it = lib.leveldb_create_iterator(db, options)
+        lib.leveldb_readoptions_destroy(options)
+        if start is None:
+            lib.leveldb_iter_seek_to_first(it)
+        else:
+            lib.leveldb_iter_seek(it, start, len(start))
+        try:
+            while lib.leveldb_iter_valid(it):
+                size = ctypes.c_size_t(0)
+                keyPtr = lib.leveldb_iter_key(it, ctypes.byref(size))
+                key = ctypes.string_at(keyPtr, size.value)
+                if end is not None and key >= end:
+                    break
+                valPtr = lib.leveldb_iter_value(it, ctypes.byref(size))
+                val = ctypes.string_at(valPtr, size.value)
+                yield key, val
+                ldb.leveldb_iter_next(it)
+        finally:
+            lib.leveldb_iter_destroy(it)
