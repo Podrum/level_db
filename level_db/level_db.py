@@ -42,10 +42,10 @@ class level_db:
             utils.close_db(self.lib, self.db)
             self.closed: bool = True
             
-    def get_key(self, key: str) -> str:
+    def get_key(self, key: str) -> bytes:
         if not self.closed:
             return utils.get_db_key(self.lib, self.db, key)
         
-    def set_key(self, key: str, value: str) -> None:
+    def set_key(self, key: str, value: bytes) -> None:
         if not self.closed:
             utils.set_db_key(self.lib, self.db, key, value)
