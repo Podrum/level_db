@@ -30,6 +30,7 @@
 ################################################################################
 
 import ctypes
+import os
 import platform
 import sys
 
@@ -160,7 +161,7 @@ class utils:
                 lib_file_name: str = "level_db_linux_x86_64.so"
         else:
             raise Exception("Unknown OS or architecture")
-        lib: object = ctypes.cdll.LoadLibrary(utils.get_data_folder() + lib_file_name)
+        lib: object = ctypes.cdll.LoadLibrary(os.path.join(utils.get_data_folder(), lib_file_name))
         utils.set_default_args(lib)
         return lib
         
