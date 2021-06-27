@@ -32,7 +32,7 @@
 from level_db.utils import utils
 
 class level_db:
-    def __init__(self) -> None:
+    def __init__(self, db_path: str) -> None:
         self.lib: object = utils.get_lib()
         self.db: object = utils.open_db(self.lib, db_path)
         self.closed: bool = False
